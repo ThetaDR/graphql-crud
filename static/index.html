@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            rel="stylesheet"
+            href="https://fonts.googleapis.com/css?family=Rubik:300|Roboto:300"
+        />
+        <title>GraphQL</title>
+        <style>
+            * {
+                font-family: 'Roboto', 'Helvetica', sans-serif;
+            }
+            .wrapper {
+                width: 750px;
+                margin: 0 auto;
+                display: flex;
+                justify-content: center;
+            }
+            .wrapper > .content {
+                width: 750px !important;
+            }
+            .wrapper > iframe {
+                display: none;
+                margin-left: 8px;
+                border: 1px solid #ddd;
+                border-radius: 5px;
+            }
+            .wrapper > iframe.open {
+                display: block;
+            }
+            a {
+                text-decoration: none;
+                color: inherit;
+            }
+            a:hover {
+                color: #4d69e6;
+            }
+            .content > a,
+            .content > span {
+                font-weight: bold;
+                font-size: 1rem;
+                float: right;
+                margin-left: 5px;
+            }
+            .content > span {
+                color: #aaa;
+                user-select: none;
+            }
+            h2 > button {
+                margin-left: 10px;
+            }
+            h2 > img {
+                float: right;
+            }
+            h4 {
+                margin-bottom: 0.4rem;
+            }
+            ul {
+                padding: 0;
+            }
+            li {
+                list-style-type: none;
+                padding: 8px 11px;
+                margin-top: 7px;
+                background-color: rgb(245, 245, 245);
+                border-radius: 10px;
+            }
+            li:hover {
+                background-color: rgb(235, 235, 235);
+            }
+            li > button {
+                margin-top: -3.5px;
+                float: right;
+            }
+            hr {
+                margin-top: 1rem;
+                border: 1px solid #ddd;
+            }
+            input {
+                outline: none;
+                border: 1px solid #aaa;
+                font-family: 'Roboto', 'Helvetica', sans-serif;
+                font-size: 0.95rem;
+                font-weight: 600;
+                padding: 0.25rem 0.4rem;
+                border-radius: 4px;
+            }
+            input:hover {
+                border-color: #0047e1;
+            }
+            button {
+                outline: none;
+                background-color: #1f5bdf;
+                color: white;
+                border: none;
+                font-size: 0.9rem;
+                font-weight: 600;
+                padding: 4px 6px;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            button:hover {
+                background-color: #1f5bdf;
+            }
+            span#updated {
+                font-size: 0.9rem;
+                color: #0047e1;
+                vertical-align: top;
+                opacity: 0;
+            }
+            span#updated.up {
+                animation: updatedGlitter 0.8s ease-out both;
+                -webkit-animation: updatedGlitter 0.8s ease-out both;
+            }
+            @keyframes updatedGlitter {
+                50% {
+                    opacity: 1;
+                }
+            }
+            .flex {
+                display: flex;
+                align-items: center;
+            }
+            .flex > span {
+                width: 5.5rem;
+            }
+            .flex > button {
+                margin-left: 5px;
+            }
+            .with-code {
+                justify-content: space-between;
+            }
+            .flex > .query {
+                width: 19rem;
+                padding: 0.5rem;
+                font-family: 'Consolas', serif;
+                font-size: 0.8rem;
+                border-radius: 5px;
+                background: #eee;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="wrapper">
+            <div class="content">
+                <h2 style="font-family: 'Rubik', 'Helvetica', sans-serif; color: #0047e1">
+                    <a href="/">GraphQL</a>
+                </h2>
+                <hr style="border-color: #0047e1" />
+                <h4>
+                    All Products <button id="set">Set Default Data</button>
+                    <button id="ref">Force Refresh</button>
+                    <span id="updated">Updated!</span>
+                </h4>
+                <ul id="allProducts"></ul>
+                <hr />
+                <div>
+                    <h4>GET & UPDATE</h4>
+                    <div class="flex with-code">
+                        <div class="flex">
+                            <span>Product Id</span><input id="pid" /> <button id="get">GET</button>
+                        </div>
+                        <div class="query">
+                            { getProduct(id : ?) {<br />&nbsp;&nbsp;&nbsp;&nbsp;id price name
+                            description} }
+                        </div>
+                    </div>
+                </div>
+                <div id="result" style="display: none">
+                    <div class="flex with-code">
+                        <div>
+                            <h4>Result</h4>
+                            <p class="flex"><span>price</span><input id="price" /></p>
+                            <p class="flex"><span>name</span><input id="name" /></p>
+                            <p class="flex"><span>description</span><input id="description" /></p>
+                        </div>
+                        <div class="query">
+                            mutation updateProduct($id: ID!, $input: ProductInput!){<br />&nbsp;&nbsp;&nbsp;&nbsp;updateProduct(id:
+                            $id, input: $input)<br />}
+                        </div>
+                    </div>
+                    <button id="update">UPDATE</button>
+                </div>
+                <hr />
+                <div>
+                    <h4>POST</h4>
+                </div>
+                <div class="flex with-code">
+                    <form>
+                        <p class="flex"><span>price</span><input name="price" required /></p>
+                        <p class="flex"><span>name</span><input name="name" required /></p>
+                        <p class="flex">
+                            <span>description</span><input name="description" required />
+                        </p>
+                        <button id="post">POST</button>
+                    </form>
+                    <div class="query">
+                        mutation addProduct($input: ProductInput) {<br />&nbsp;&nbsp;&nbsp;&nbsp;addProduct(input:
+                        $input)<br />}
+                    </div>
+                </div>
+                <hr />
+                <div>
+                    <h4>
+                        Search
+                    </h4>
+                </div>
+                <div class="flex with-code">
+                    <p class="flex">
+                        <span>name</span><input id="searchName" />
+                    </p>
+                    <div class="query">
+                        { searchProducts(name: "${value}") {<br />&nbsp;&nbsp;&nbsp;&nbsp;id price
+                        name description} }
+                    </div>
+                </div>
+                <ul id="results"></ul>
+                <hr />
+            
+            </div>
+        </div>
+
+        <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+        <script src="/mod.js" defer></script>
+        <script src="/crud.js"></script>
+    </body>
+</html>
